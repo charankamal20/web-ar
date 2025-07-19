@@ -3,83 +3,110 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const sceneEl = document.querySelector("a-scene");
-        let arSystem;
-        sceneEl.addEventListener("loaded", function () {
-          arSystem = sceneEl.systems["mindar-image-system"];
-        });
-        const exampleTarget = document.querySelector("#example-target");
-        const examplemodel = document.querySelector("#gltf");
+    <style>
 
-        const startButton = document.querySelector("#example-start-button");
-        const stopButton = document.querySelector("#example-stop-button");
-        const pauseButton = document.querySelector("#example-pause-button");
-        const pauseKeepVideoButton = document.querySelector(
-          "#example-pause-keep-video-button"
-        );
-        const unpauseButton = document.querySelector("#example-unpause-button");
-        startButton.addEventListener("click", () => {
-          console.log("start");
-          arSystem.start(); // start AR
-        });
-        stopButton.addEventListener("click", () => {
-          arSystem.stop(); // stop AR
-        });
-        pauseButton.addEventListener("click", () => {
-          arSystem.pause(); // pause AR, pause video
-        });
-        pauseKeepVideoButton.addEventListener("click", () => {
-          arSystem.pause(true); // pause AR, keep video
-        });
-        unpauseButton.addEventListener("click", () => {
-          arSystem.unpause(); // unpause AR and video
-        });
-        // arReady event triggered when ready
-        sceneEl.addEventListener("arReady", (event) => {
-          // console.log("MindAR is ready")
-        });
-        // arError event triggered when something went wrong. Mostly browser compatbility issue
-        sceneEl.addEventListener("arError", (event) => {
-          // console.log("MindAR failed to start")
-        });
-        // detect target found
-        exampleTarget.addEventListener("targetFound", (event) => {
-          console.log("target found");
-        });
-        // detect target lost
-        exampleTarget.addEventListener("targetLost", (event) => {
-          console.log("target lost");
-        });
+      @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
 
-        examplemodel.addEventListener("click", (event) => {
-          console.log("model click");
-          window.open("https://www.instagram.com/zentroid.studios/", "_blank");
-        });
-      });
-    </script>
+      body {
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      /* Launch Screen */
+    #overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #fff200;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+    }
+
+    h1 {
+        font-size: 3em;
+        margin-bottom: 20px;
+    }
+
+    #launch-btn {
+      padding: 15px 30px;
+      font-size: 1.2em;
+      background-color: white;
+      color: #1e1e1e;
+      border: 2px solid #1e1e1e;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+    }
+
+    #launch-btn:hover {
+      background-color: #1e1e1e;
+      color: white;
+    }
+
+    #main-heading {
+    font-family: 'Urbanist';
+      font-size: 80px;
+    font-weight: bold;
+    line-height: 0.9; 
+    margin-bottom: 30px;
+    text-align: center;
+    color: black;
+  }
+
+
+      /* Close Button */
+    #close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 9999;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      font-size: 24px;
+      font-weight: bold;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+      #close-btn:hover {
+        background: rgba(205, 4, 4, 0.8);
+      }
+    </style>
   </head>
+
   <body>
-    <div style="position: absolute; z-index: 1000">
-      <button id="example-start-button">Start</button>
-      <button id="example-pause-button">Pause</button>
-      <button id="example-pause-keep-video-button">Pause (keep video)</button>
-      <button id="example-unpause-button">UnPause</button>
-      <button id="example-stop-button">Stop</button>
+    <!-- Launch Screen -->
+    <div id="overlay">
+      <!-- <img src="./assets/Frame 67@2x.svg" alt=""> -->
+      <h1 id="main-heading">Zentroid<br>Studios</h1>
+      <button id="launch-btn">Launch</button>
     </div>
+
+    <!-- Close Button -->
+    <button id="close-btn">&times;</button>
+
+    <!-- AR Scene -->
     <a-scene
-      mindar-image="imageTargetSrc: ./assets/targets.mind; autoStart: false;"
+      mindar-image="imageTargetSrc: ./assets/visiting_card.mind; autoStart: false;"
       color-space="sRGB"
       renderer="colorManagement: true, physicallyCorrectLights"
       vr-mode-ui="enabled: false"
       device-orientation-permission-ui="enabled: false"
     >
       <a-assets>
-        <a-asset-item
-          id="avatarModel"
-          src="./assets/model/model.gltf"
-        ></a-asset-item>
+        <a-asset-item id="avatarModel" src="./assets/model/model.gltf"></a-asset-item>
       </a-assets>
 
       <a-camera
@@ -96,9 +123,48 @@
           position="0 0.3 0"
           scale="1.5 1.5 1.5"
           class="clickable"
-          gltf-link-handler
         ></a-gltf-model>
       </a-entity>
     </a-scene>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const sceneEl = document.querySelector("a-scene");
+        const launchBtn = document.getElementById("launch-btn");
+        const overlay = document.getElementById("overlay");
+        const closeBtn = document.getElementById("close-btn");
+        const exampleTarget = document.querySelector("#example-target");
+        const examplemodel = document.querySelector("#gltf");
+
+        let arSystem;
+
+        sceneEl.addEventListener("loaded", function () {
+          arSystem = sceneEl.systems["mindar-image-system"];
+        });
+
+        // Launch AR
+        launchBtn.addEventListener("click", () => {
+          overlay.style.display = "none";
+          closeBtn.style.display = "flex";
+          arSystem.start();
+        });
+
+        // Close AR and return to Launch screen
+        closeBtn.addEventListener("click", () => {
+          arSystem.stop();
+          overlay.style.display = "flex";
+          closeBtn.style.display = "none";
+        });
+
+        // Optional model click handler
+        examplemodel.addEventListener("click", () => {
+          window.open("https://www.instagram.com/zentroid.studios/", "_blank");
+        });
+
+        // Logging target events
+        exampleTarget.addEventListener("targetFound", () => console.log("target found"));
+        exampleTarget.addEventListener("targetLost", () => console.log("target lost"));
+      });
+    </script>
   </body>
 </html>
